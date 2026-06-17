@@ -16,7 +16,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '24'
 
     - name: Authenticate and Build using GameMaker CLI
       env:
@@ -25,8 +25,8 @@ jobs:
       run: |       
         npx @gamemaker/gm-cli@latest package \
           --target=ios \
-          --project="${{ github.workspace }}/YourProjectName.yyp" \
           --output="${{ github.workspace }}/output/" \
+          "${{ github.workspace }}/YourProjectName.yyp" \
           -- CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
     - name: Upload Unsigned Output
