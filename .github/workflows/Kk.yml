@@ -23,12 +23,13 @@ jobs:
         GM_USER: ${{ secrets.GM_USERNAME }}
         GM_PASS: ${{ secrets.GM_PASSWORD }}
       run: |       
+        export CODE_SIGN_IDENTITY="-"
+        export CODE_SIGNING_REQUIRED=NO
+        export CODE_SIGNING_ALLOWED=NO
         npx @gamemaker/gm-cli@latest package \
           --target=ios \
           --output="${{ github.workspace }}/output/" \
-          "${{ github.workspace }}/YourProjectName.yyp" \
-          -- CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
-
+          "${{ github.workspace }}/YourProjectName.yyp"
     - name: Upload Unsigned Output
       uses: actions/upload-artifact@v4
       with:
