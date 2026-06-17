@@ -1,0 +1,42 @@
+name: Build Unsigned GameMaker iOS Project
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set Xcode to Ad-Hoc Signing
+      run: |
+        git config --global core.autocrlf false
+
+    - name: Download & Install GameMaker CLI (Igor)
+      run: |
+        curl -O https://gms.yoyogames.com/GameMaker-Installer-current.pkg
+        sudo installer -pkg GameMaker-Installer-current.pkg -target /
+        
+    - name: Log in and Compile Project
+      env:
+        GM_USER: ${{ secrets.GM_USERNAME }}
+        GM_PASS: ${{ secrets.GM_PASSWORD }}
+      run: |
+        /Applications/GameMaker.app/Contents/Mono/bin/mono /Applications/GameMaker.app/Contents/Resources/Igor.exe \
+          --uf ~/.config/GameMaker/user.json \
+          --Username="$GM_USER" --Password="$GM_PASS" \
+          --Platform=ios --Configuration=Debug \
+          --Project="${{ github.workspace }}/YourProjectName.yyp" \
+          Package -- CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO
+
+    - name: Upload Unsigned Output
+      uses: actions/upload-artifact@v4
+      with:
+        name: game-unsigned-ios
+        path: '**/macOS-Build/ios/*'
+        retention-days: 7
